@@ -19,8 +19,8 @@
 
 ```bash
 # 1. Cloner le projet
-git clone https://github.com/ton-pseudo/cineverse.git
-cd cineverse
+git clone https://github.com/nouhaila-bizane/Cineverse.git
+cd Cineverse
 
 # 2. Installer les dépendances
 cd frontend && npm install
