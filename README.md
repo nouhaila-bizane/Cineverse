@@ -36,16 +36,17 @@ cd ../backend && npm install
 ## 📸 Captures d'écran
 
 ###  Page d'accueil 3D
-![Page d'accueil](screenshots/01-homepage-3d.png)
+![Page d'accueil](https://raw.githubusercontent.com/nouhaila-bizane/Cineverse/main/screenshots/01-homepage-3d.png)
 
 ### 🎬 Catalogue de films
-![Catalogue](screenshots/02-catalogue-films.png)
+![Catalogue](https://raw.githubusercontent.com/nouhaila-bizane/Cineverse/main/screenshots/02-catalogue-films.png)
 
 ### 📊 Dashboard Admin
-![Dashboard](screenshots/03-dashboard-admin.png)
+![Dashboard](https://raw.githubusercontent.com/nouhaila-bizane/Cineverse/main/screenshots/03-dashboard-admin.png)
 
 ### ℹ️ Page À propos
-![À propos](screenshots/04-about-prochainement.png)
+![À propos](https://raw.githubusercontent.com/nouhaila-bizane/Cineverse/main/screenshots/04-about-prochainement.png)
+
 
 ## 👤 Auteur
 Développé par **NOUHAILA BIZANE** pour mon portfolio .
