@@ -32,7 +32,7 @@ cd ../backend && npm install
 # 4. Lancer les serveurs
 # Terminal 1 : cd backend && node server.js
 # Terminal 2 : cd frontend && npm run dev
-
+```
 ## 📸 Captures d'écran
 
 ###  Page d'accueil 3D
