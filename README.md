@@ -18,8 +18,8 @@
 ## 🔑 Compte de démonstration
 
 Pour tester toutes les fonctionnalités (espace admin, ajout de films, réservation) :
-- **Email** : `admin@cineverse.com`
-- **Mot de passe** : `Admin1234!`
+- **Email** : `admin1@cinverse.com`
+- **Mot de passe** : `admin123`
 
 *(Tu peux aussi créer ton propre compte via la page d'inscription).*
 
