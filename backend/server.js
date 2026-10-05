@@ -43,6 +43,7 @@ app.get('/', (req, res) => {
 // Démarrer le serveur avec port dynamique pour Render
 const PORT = process.env.PORT || 5000;
 
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+    console.log(`Serveur lancé sur le port ${PORT}`);
 });
