@@ -19,7 +19,7 @@
 
 Pour tester toutes les fonctionnalités (espace admin, ajout de films, réservation) :
 - **Email** : `admin@cineverse.com`
-- **Mot de passe** : `NiailaAOne123`
+- **Mot de passe** : `Admin1234!`
 
 *(Tu peux aussi créer ton propre compte via la page d'inscription).*
 
