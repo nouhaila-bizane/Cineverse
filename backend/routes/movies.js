@@ -121,6 +121,7 @@ router.put('/:id', adminAuth, async (req, res) => {
             req.params.id,
             req.body,
             { new: true }
+            
         );
         if (!movie) {
             return res.status(404).json({ message: 'Film non trouvé' });

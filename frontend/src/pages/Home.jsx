@@ -62,18 +62,19 @@ function CentralPillar() {
 }
 
 // ============================================
-//  CARTE EN SPIRALE SÉCURISÉE (AGRANDIE)
+//  CARTE EN SPIRALE SÉCURISÉE (RESPONSIVE)
 // ============================================
-function SpiralMovieCard({ movie, index, totalCards }) {
+function SpiralMovieCard({ movie, index, totalCards, isMobile }) {
     const groupRef = useRef();
     const angleOffset = (index / totalCards) * Math.PI * 2;
-    const radius = 12;
+    // ✅ Rayon réduit sur mobile
+    const radius = isMobile ? 8 : 12;
 
     useFrame((state) => {
         if (groupRef.current) {
             const time = state.clock.elapsedTime;
             const angle = angleOffset + time * 0.4;
-            const spiralHeight = (index / totalCards) * 15 - 7.5;
+            const spiralHeight = (index / totalCards) * (isMobile ? 10 : 15) - (isMobile ? 5 : 7.5);
 
             groupRef.current.position.x = Math.cos(angle) * radius;
             groupRef.current.position.z = Math.sin(angle) * radius;
@@ -90,6 +91,10 @@ function SpiralMovieCard({ movie, index, totalCards }) {
         return movie.posterImage;
     }, [movie]);
 
+    // ✅ Dimensions réduites sur mobile
+    const cardWidth = isMobile ? 2 : 3.3;
+    const cardHeight = isMobile ? 3 : 4.8;
+
     return (
         <group ref={groupRef}>
             {/* ✅ Image qui remplit TOUTE la forme */}
@@ -97,13 +102,13 @@ function SpiralMovieCard({ movie, index, totalCards }) {
                 url={imageUrl}
                 transparent
                 side={THREE.DoubleSide}
-                position={[0, 0, 0.01]} // Légèrement devant la bordure
-                scale={[3.3, 4.8, 1]} // ✅ Mêmes dimensions exactes que la bordure
+                position={[0, 0, 0.01]}
+                scale={[cardWidth, cardHeight, 1]}
             />
 
             {/* Bordure lumineuse (derrière l'image) */}
             <mesh position={[0, 0, -0.01]}>
-                <planeGeometry args={[3.3, 4.8]} />
+                <planeGeometry args={[cardWidth, cardHeight]} />
                 <meshBasicMaterial color="#f0a3a6" transparent opacity={0.6} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} />
             </mesh>
 
@@ -166,14 +171,22 @@ function ColoredSmoke() {
 }
 
 // ============================================
-//  SCÈNE 3D AVEC POSTERS AGRANDIS
+//  SCÈNE 3D RESPONSIVE
 // ============================================
 function MoviesSpiralScene({ movies }) {
+    // ✅ Détection mobile
+    const isMobile = window.innerWidth < 768;
+
     return (
         <Canvas
-            camera={{ position: [0, 0, 28], fov: 65 }} // ✅ Camera reculée : de 20 à 28 pour voir les grands posters
+            // ✅ Camera adaptée pour mobile
+            camera={{ 
+                position: [0, 0, isMobile ? 18 : 28], 
+                fov: isMobile ? 55 : 65 
+            }}
             gl={{ antialias: false, alpha: true, powerPreference: "low-power", preserveDrawingBuffer: true }}
             dpr={[1, 1]}
+            style={{ width: '100%', height: '100%' }}
         >
             <Suspense fallback={null}>
                 <ambientLight intensity={0.3} />
@@ -187,7 +200,13 @@ function MoviesSpiralScene({ movies }) {
                 <Sparkles count={100} scale={30} size={3} speed={0.3} color="#ff006e" />
 
                 {movies.length > 0 && movies.slice(0, 6).map((movie, index) => (
-                    <SpiralMovieCard key={movie._id} movie={movie} index={index} totalCards={6} />
+                    <SpiralMovieCard 
+                        key={movie._id} 
+                        movie={movie} 
+                        index={index} 
+                        totalCards={6}
+                        isMobile={isMobile}
+                    />
                 ))}
 
                 <EffectComposer multisampling={0}>
@@ -201,7 +220,7 @@ function MoviesSpiralScene({ movies }) {
 }
 
 // ============================================
-// 🏠 PAGE D'ACCUEIL
+// 🏠 PAGE D'ACCUEIL RESPONSIVE
 // ============================================
 const Home = () => {
     const [allMovies, setAllMovies] = useState([]);
@@ -229,44 +248,117 @@ const Home = () => {
     const comingSoonMovies = allMovies.filter(m => m.type === 'ComingSoon').slice(0, 6);
 
     if (loading) {
-        return <div className="min-h-screen bg-black flex items-center justify-center"><div className="text-[#E50914] text-2xl font-bold animate-pulse">Chargement...</div></div>;
+        return <div className="min-h-screen bg-black flex items-center justify-center"><div className="text-[#E50914] text-xl md:text-2xl font-bold animate-pulse">Chargement...</div></div>;
     }
 
     return (
         <div className="min-h-screen bg-black overflow-x-hidden relative">
-            <div className="fixed inset-0 z-0">
+            {/* ✅ Canvas 3D responsive */}
+            <div className="fixed inset-0 z-0 w-full h-full">
                 <MoviesSpiralScene movies={allMovies} />
             </div>
             <div className="fixed inset-0 bg-black/40 z-0 pointer-events-none" />
 
             <div className="relative z-10">
                 <motion.section style={{ opacity, scale }} className="h-screen flex items-center justify-center">
-                    <div className="text-center px-4">
-                        <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="text-8xl md:text-9xl font-black mb-6" style={{ background: 'linear-gradient(135deg, #cf656a 0%, #ff006e 50%, #cc0000 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 40px rgba(229,9,20,0.6))' }}>CineVerse</motion.h1>
-                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }} className="text-xl text-gray-300 mb-10">L'expérience cinématographique ultime</motion.p>
-                        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.8 }}>
-                            <Link to="/movies" className="inline-flex items-center gap-2 bg-gradient-to-r from-[#E50914] to-[#ff006e] text-white px-8 py-4 rounded-full text-lg font-bold hover:scale-110 transition-transform shadow-[0_0_30px_rgba(229,9,20,0.4)] hover:shadow-[0_0_50px_rgba(229,9,20,0.7)]"><FiPlay className="fill-current" /> Découvrir</Link>
+                    <div className="text-center px-4 w-full max-w-4xl mx-auto">
+                        {/* ✅ Titres responsives */}
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 50 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            transition={{ duration: 1 }} 
+                            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black mb-4 md:mb-6" 
+                            style={{ 
+                                background: 'linear-gradient(135deg, #cf656a 0%, #ff006e 50%, #cc0000 100%)', 
+                                WebkitBackgroundClip: 'text', 
+                                WebkitTextFillColor: 'transparent', 
+                                backgroundClip: 'text', 
+                                filter: 'drop-shadow(0 0 40px rgba(229,9,20,0.6))' 
+                            }}
+                        >
+                            CineVerse
+                        </motion.h1>
+                        
+                        <motion.p 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            transition={{ delay: 0.5, duration: 1 }} 
+                            className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 md:mb-10 px-2"
+                        >
+                            L'expérience cinématographique ultime
+                        </motion.p>
+                        
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            transition={{ delay: 1, duration: 0.8 }}
+                        >
+                            <Link 
+                                to="/movies" 
+                                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#E50914] to-[#ff006e] text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full text-base sm:text-lg font-bold hover:scale-110 transition-transform shadow-[0_0_30px_rgba(229,9,20,0.4)] hover:shadow-[0_0_50px_rgba(229,9,20,0.7)]"
+                            >
+                                <FiPlay className="fill-current" /> Découvrir
+                            </Link>
                         </motion.div>
                     </div>
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, y: [0, 10, 0] }} transition={{ delay: 2, duration: 2, repeat: Infinity }} className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-400"><FiChevronDown className="text-2xl" /></motion.div>
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1, y: [0, 10, 0] }} 
+                        transition={{ delay: 2, duration: 2, repeat: Infinity }} 
+                        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-400"
+                    >
+                        <FiChevronDown className="text-2xl" />
+                    </motion.div>
                 </motion.section>
 
-                <section className="py-32 px-4">
+                {/* ✅ Section "À l'affiche" responsive */}
+                <section className="py-16 sm:py-24 md:py-32 px-3 sm:px-4">
                     <div className="max-w-7xl mx-auto">
-                        <motion.h2 initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="text-6xl md:text-7xl font-bold mb-20 text-center"><span className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">À l'affiche</span></motion.h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <motion.h2 
+                            initial={{ opacity: 0, x: -50 }} 
+                            whileInView={{ opacity: 1, x: 0 }} 
+                            viewport={{ once: true }} 
+                            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-10 sm:mb-16 md:mb-20 text-center px-2"
+                        >
+                            <span className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
+                                À l'affiche
+                            </span>
+                        </motion.h2>
+                        
+                        {/* ✅ Grille responsive */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                             {featuredMovies.map((movie, index) => (
-                                <motion.div key={movie._id} initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.8 }} className="group cursor-pointer">
+                                <motion.div 
+                                    key={movie._id} 
+                                    initial={{ opacity: 0, y: 100 }} 
+                                    whileInView={{ opacity: 1, y: 0 }} 
+                                    viewport={{ once: true }} 
+                                    transition={{ delay: index * 0.1, duration: 0.8 }} 
+                                    className="group cursor-pointer"
+                                >
                                     <Link to={`/movie/${movie._id}`}>
-                                        <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-black/60 backdrop-blur-sm border border-white/10">
-                                            <div className="relative h-[500px]">
-                                                <img src={movie.posterImage && movie.posterImage.startsWith('http') ? movie.posterImage : 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'} alt={movie.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.src = 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'; }} />
+                                        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-black/60 backdrop-blur-sm border border-white/10">
+                                            {/* ✅ Hauteur responsive */}
+                                            <div className="relative h-[350px] sm:h-[400px] md:h-[450px] lg:h-[500px]">
+                                                <img 
+                                                    src={movie.posterImage && movie.posterImage.startsWith('http') 
+                                                        ? movie.posterImage 
+                                                        : 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'
+                                                    } 
+                                                    alt={movie.title} 
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                                    onError={(e) => { 
+                                                        e.target.src = 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'; 
+                                                    }} 
+                                                />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                                             </div>
-                                            <div className="absolute bottom-0 left-0 right-0 p-6">
-                                                <h3 className="text-2xl font-bold text-white mb-2">{movie.title}</h3>
-                                                <div className="flex items-center gap-3 text-gray-300">
-                                                    <span className="flex items-center gap-1"><FiStar className="text-yellow-500 fill-yellow-500" /> {movie.rating}/10</span>
+                                            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 line-clamp-1">{movie.title}</h3>
+                                                <div className="flex items-center gap-2 sm:gap-3 text-gray-300 text-sm sm:text-base">
+                                                    <span className="flex items-center gap-1">
+                                                        <FiStar className="text-yellow-500 fill-yellow-500" /> {movie.rating}/10
+                                                    </span>
                                                     <span>{movie.duration?.hours}h{movie.duration?.minutes}</span>
                                                 </div>
                                             </div>
@@ -278,21 +370,51 @@ const Home = () => {
                     </div>
                 </section>
 
-                <section className="py-32 px-4 bg-gradient-to-b from-transparent to-black/80">
+                {/* ✅ Section "Prochainement" responsive */}
+                <section className="py-16 sm:py-24 md:py-32 px-3 sm:px-4 bg-gradient-to-b from-transparent to-black/80">
                     <div className="max-w-7xl mx-auto">
-                        <h2 className="text-6xl md:text-7xl font-bold mb-20 text-center"><span className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">Prochainement</span></h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-10 sm:mb-16 md:mb-20 text-center px-2">
+                            <span className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
+                                Prochainement
+                            </span>
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                             {comingSoonMovies.map((movie, index) => (
-                                <motion.div key={movie._id} initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.8 }} className="group cursor-pointer">
+                                <motion.div 
+                                    key={movie._id} 
+                                    initial={{ opacity: 0, y: 100 }} 
+                                    whileInView={{ opacity: 1, y: 0 }} 
+                                    viewport={{ once: true }} 
+                                    transition={{ delay: index * 0.1, duration: 0.8 }} 
+                                    className="group cursor-pointer"
+                                >
                                     <Link to={`/movie/${movie._id}`}>
-                                        <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-black/60 backdrop-blur-sm border border-white/10">
-                                            <div className="relative h-[500px]">
-                                                <img src={movie.posterImage && movie.posterImage.startsWith('http') ? movie.posterImage : 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'} alt={movie.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.target.src = 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'; }} />
-                                                <div className="absolute top-4 right-4 bg-[#E50914] text-white px-4 py-2 rounded-full text-sm font-bold">BIENTÔT</div>
+                                        <div className="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-black/60 backdrop-blur-sm border border-white/10">
+                                            <div className="relative h-[350px] sm:h-[400px] md:h-[450px] lg:h-[500px]">
+                                                <img 
+                                                    src={movie.posterImage && movie.posterImage.startsWith('http') 
+                                                        ? movie.posterImage 
+                                                        : 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'
+                                                    } 
+                                                    alt={movie.title} 
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                                    onError={(e) => { 
+                                                        e.target.src = 'https://via.placeholder.com/300x450/1a1a1a/E50914?text=CineVerse'; 
+                                                    }} 
+                                                />
+                                                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-[#E50914] text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold">
+                                                    BIENTÔT
+                                                </div>
                                             </div>
-                                            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
-                                                <h3 className="text-2xl font-bold text-white mb-2">{movie.title}</h3>
-                                                {movie.showtimes?.[0] && <p className="text-gray-400 flex items-center gap-2"><FiCalendar />{new Date(movie.showtimes[0].date).toLocaleDateString('fr-FR')}</p>}
+                                            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-black to-transparent">
+                                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 line-clamp-1">{movie.title}</h3>
+                                                {movie.showtimes?.[0] && (
+                                                    <p className="text-gray-400 flex items-center gap-2 text-sm sm:text-base">
+                                                        <FiCalendar />
+                                                        {new Date(movie.showtimes[0].date).toLocaleDateString('fr-FR')}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                     </Link>

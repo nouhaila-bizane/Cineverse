@@ -46,9 +46,12 @@ function App() {
         <AnimatePresence mode="wait">
           {loading && <Loader />}
         </AnimatePresence>
-        <div className="min-h-screen bg-dark-200 flex flex-col">
+
+        {/* Ajout de w-full et overflow-x-hidden pour éviter le scroll horizontal sur mobile */}
+        <div className="min-h-screen bg-dark-200 flex flex-col w-full overflow-x-hidden">
           <Navbar />
-          <div className="flex-grow">
+
+          <div className="flex-grow w-full">
             <Routes>
               {/* Routes Publiques */}
               <Route path="/" element={<Home />} />
@@ -61,8 +64,8 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/releases" element={<Releases />} />
               <Route path="/about" element={<About />} />
-              <Route path="/about" element={<About />} />
               <Route path="/rooms" element={<Rooms />} />
+
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
@@ -87,6 +90,7 @@ function App() {
               } />
             </Routes>
           </div>
+
           <Footer />
         </div>
         <Toaster position="top-right" />

@@ -12,6 +12,8 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #141414;
   color: white;
+  overflow-x: hidden;
+  /* Empêche le scroll horizontal sur mobile */
 }
 
 /* Scrollbar personnalisée */
@@ -26,4 +28,131 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #E50914;
   border-radius: 4px;
+}
+
+/* ✅ Rendre toutes les images responsives */
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+/* ✅ Pour les affiches de films spécifiquement */
+.movie-poster,
+.poster-image,
+img[src*="cloudinary"],
+img[src*="res.cloudinary"] {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* ✅ Conteneur principal */
+.container,
+.main-content {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ========================================
+    RESPONSIVE DESIGN POUR MOBILE
+   ======================================== */
+
+/* Pour les tablettes et petits écrans (max 1024px) */
+@media (max-width: 1024px) {
+
+  .container,
+  .main-content {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .movies-grid,
+  .films-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Pour les téléphones (max 768px) */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container,
+  .main-content {
+    padding: 10px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Grille de films : 1 film par ligne sur mobile */
+  .movies-grid,
+  .films-container,
+  .grid,
+  .films-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  /* Titres plus petits sur mobile */
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  /* Images adaptées */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Cacher les éléments non essentiels sur mobile si besoin */
+  .desktop-only {
+    display: none;
+  }
+
+  /* Canvas Three.js responsive */
+  canvas {
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: auto !important;
+  }
+}
+
+/* Pour les très petits téléphones (max 480px) */
+@media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+
+  .container,
+  .main-content {
+    padding: 8px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .movie-poster,
+  .poster-image {
+    max-width: 100%;
+  }
 }
